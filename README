@@ -1,0 +1,17 @@
+prescons.py
+
+This is a "pseudo-interactive" python interpreter.  I hacked this together
+when preparing a presentation that involved some live coding.  It reads code
+from an input file and runs it line by line.  You can move through the code by
+hitting 'space'.
+
+Suggestions, bug reports, patches welcome at github.com/inglesp/prescons.
+
+Usage:
+
+ $ python prescons.py <filename>
+
+See example.py for an example.
+
+Currently runs only on *nix.
+
