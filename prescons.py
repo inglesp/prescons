@@ -49,13 +49,16 @@ class PresentationConsole(InteractiveConsole):
         return line.rstrip()
 
     def runcode(self, code):
-        sys.stdout = StringIO()
+        sys.stdout, sys.stderr = StringIO(), StringIO()
         InteractiveConsole.runcode(self, code)
-        output = sys.stdout.getvalue()
-        sys.stdout = sys.__stdout__
+        output, errors = sys.stdout.getvalue(), sys.stderr.getvalue()
+        sys.stdout, sys.stderr = sys.__stdout__, sys.__stderr__
         if len(output) > 0:
             getch(' ')
             self.write(output)
+        if len(errors) > 0:
+            getch(' ')
+            self.write(errors)
 
 if __name__ == '__main__':
     path = sys.argv[1]
