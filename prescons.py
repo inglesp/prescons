@@ -38,14 +38,17 @@ class PresentationConsole(InteractiveConsole):
         InteractiveConsole.__init__(self)
 
     def raw_input(self, prompt=''):
-        self.write(prompt)
-        if prompt == sys.ps1:
-            getch(' ')
         line = self.file.readline()
         if len(line) == 0:
             self.file.close()
             raise EOFError
-        self.write(line)
+        if line.startswith('#!'):
+            line = line[2:]
+        else:
+            self.write(prompt)
+            if prompt == sys.ps1:
+                getch(' ')
+            self.write(line)
         return line.rstrip()
 
     def runcode(self, code):
