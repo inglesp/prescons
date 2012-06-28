@@ -28,6 +28,8 @@ def getch(ch=None):
                 break
             if ord(gotch) == 3:
                 raise KeyboardInterrupt
+            if ord(gotch) == 4:
+                raise SystemExit
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
