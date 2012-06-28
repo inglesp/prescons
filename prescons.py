@@ -40,7 +40,11 @@ class PresentationConsole(InteractiveConsole):
     def raw_input(self, prompt=''):
         self.write(prompt)
         if prompt == sys.ps1:
-            getch(' ')
+            try:
+                getch(' ')
+            except KeyboardInterrupt:
+                print "KeyboardInterrupt"
+                exec "import ipdb; ipdb.set_trace()" in self.locals
         line = self.file.readline()
         if len(line) == 0:
             self.file.close()
