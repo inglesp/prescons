@@ -15,28 +15,29 @@ try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
-import sys, termios, tty
+import sys
 
 # get character from stdin
 # based on http://code.activestate.com/recipes/134892/
-# *nix only, and doesn't handle arrow keys well
-def getch(ch=None):
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    try:
-        while True:
+try:
+    # *nix
+    import termios, tty
+    def getch():
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        gotch = None
+        try:
             tty.setraw(fd)
             gotch = sys.stdin.read(1)
-            if ch is None or gotch == ch:
-                break
-            if ord(gotch) == 3:
-                raise KeyboardInterrupt
-            if ord(gotch) == 4:
-                raise SystemExit
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return gotch
+except ImportError:
+    # Windows
+    import msvcrt
+    def getch():
+        return msvcrt.getch()
 
-# subclasses InteractiveConsole from code module
 class PresentationConsole(InteractiveConsole):
     def __init__(self, path):
         self.file = open(path)
@@ -53,7 +54,7 @@ class PresentationConsole(InteractiveConsole):
             self.write(prompt)
             sys.stderr.flush()
             if prompt == sys.ps1:
-                getch(' ')
+                self.get_user_input()
             self.write(line)
         return line.rstrip()
 
@@ -63,11 +64,17 @@ class PresentationConsole(InteractiveConsole):
         output, errors = sys.stdout.getvalue(), sys.stderr.getvalue()
         sys.stdout, sys.stderr = sys.__stdout__, sys.__stderr__
         if len(output) > 0:
-            getch(' ')
+            self.get_user_input()
             self.write(output)
         if len(errors) > 0:
-            getch(' ')
+            self.get_user_input()
             self.write(errors)
+
+    def get_user_input(self):
+        while True:
+            if getch() == ' ':
+                break
+
 
 if __name__ == '__main__':
     path = sys.argv[1]
