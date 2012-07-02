@@ -72,9 +72,12 @@ class PresentationConsole(InteractiveConsole):
 
     def get_user_input(self):
         while True:
-            if getch() == ' ':
+            gotch = getch()
+            if gotch == ' ':
                 break
-
+            elif ord(gotch) in (4, 26):
+                # Ctrl-D or Ctrl-Z
+                raise SystemExit
 
 if __name__ == '__main__':
     path = sys.argv[1]
