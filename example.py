@@ -1,7 +1,7 @@
-print "hello world"
+print("hello world")
 def fn(x):
     if x > 0:
-        print x
+        print(x)
     else:
         raise Exception
 

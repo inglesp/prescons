@@ -11,7 +11,10 @@
 # github.com/inglesp/prescons
 
 from code import InteractiveConsole
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import sys, termios, tty
 
 # get character from stdin
@@ -48,6 +51,7 @@ class PresentationConsole(InteractiveConsole):
             line = line[2:]
         else:
             self.write(prompt)
+            sys.stderr.flush()
             if prompt == sys.ps1:
                 getch(' ')
             self.write(line)
