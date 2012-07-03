@@ -5,6 +5,10 @@ when preparing a presentation that involved some live coding.  It reads code
 from an input file and runs it line by line.  You can move through the code by
 hitting 'space'.
 
+You can also switch to (and from) a normal interactive console by pressing
+Ctrl-C.  This allows you to inspect, and even make changes to, the console's
+namespace in the middle of a presentation.
+
 Suggestions, bug reports, patches welcome at github.com/inglesp/prescons.
 
 Usage:
@@ -13,5 +17,6 @@ Usage:
 
 See example.py for an example.
 
-Currently runs only on *nix.
+Tested on Posix and Windows, and with pythons 2.7 and 3.2
 
+Thanks to Asim Ihsan (https://github.com/asimihsan/) for testing and ideas.
