@@ -25,7 +25,7 @@ import os, sys
 try:
     # python2
     input = raw_input
-except:
+except NameError:
     # python3
     pass
 
@@ -124,5 +124,4 @@ class NonInteractiveFileReadingPresentationConsole(FileReadingPresentationConsol
 if __name__ == '__main__':
     path = sys.argv[1]
     console = InteractiveFileReadingPresentationConsole(path)
-#    console = StandardPresentationConsole(path)
     console.interact()
