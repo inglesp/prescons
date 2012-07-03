@@ -11,11 +11,22 @@
 # github.com/inglesp/prescons
 
 from code import InteractiveConsole
+
 try:
+    # python2
     from StringIO import StringIO
 except ImportError:
+    # python3
     from io import StringIO
-import sys
+
+import os, sys
+
+try:
+    # python2
+    input = raw_input
+except:
+    # python3
+    pass
 
 # get character from stdin
 # based on http://code.activestate.com/recipes/134892/
@@ -43,20 +54,22 @@ class PresentationConsole(InteractiveConsole):
         self.file = open(path)
         InteractiveConsole.__init__(self)
 
+    def switch_mode(self):
+        transitions = {
+            StandardPresentationConsole: InteractiveFileReadingPresentationConsole,
+            InteractiveFileReadingPresentationConsole: StandardPresentationConsole
+        }
+
+        print()
+        print('switching mode!')
+        self.__class__ = transitions[self.__class__]
+
     def raw_input(self, prompt=''):
-        line = self.file.readline()
-        if len(line) == 0:
-            self.file.close()
-            raise EOFError
-        if line.startswith('#!'):
-            line = line[2:]
-        else:
-            self.write(prompt)
-            sys.stderr.flush()
-            if prompt == sys.ps1:
-                self.get_user_input()
-            self.write(line)
-        return line.rstrip()
+        try:
+            return self.get_raw_input(prompt)
+        except KeyboardInterrupt:
+            self.switch_mode()
+            return ''
 
     def runcode(self, code):
         sys.stdout, sys.stderr = StringIO(), StringIO()
@@ -64,22 +77,51 @@ class PresentationConsole(InteractiveConsole):
         output, errors = sys.stdout.getvalue(), sys.stderr.getvalue()
         sys.stdout, sys.stderr = sys.__stdout__, sys.__stderr__
         if len(output) > 0:
-            self.get_user_input()
+            self.wait_for_user_input()
             self.write(output)
         if len(errors) > 0:
-            self.get_user_input()
+            self.wait_for_user_input()
             self.write(errors)
 
-    def get_user_input(self):
+    def wait_for_user_input(self):
+        pass
+
+class StandardPresentationConsole(PresentationConsole):
+    def get_raw_input(self, prompt):
+        return input(prompt)
+
+class FileReadingPresentationConsole(PresentationConsole):
+    def get_raw_input(self, prompt):
+        self.write(prompt)
+        sys.stderr.flush()
+        if prompt == sys.ps1:
+            self.wait_for_user_input()
+        line = self.file.readline()
+        if len(line) == 0:
+            self.file.close()
+            raise EOFError
+        self.write(line)
+        return line.rstrip()
+
+class InteractiveFileReadingPresentationConsole(FileReadingPresentationConsole):
+    def wait_for_user_input(self):
         while True:
             gotch = getch()
             if gotch == ' ':
                 break
+            elif ord(gotch) == 3:
+                # Ctrl-C
+                raise KeyboardInterrupt
             elif ord(gotch) in (4, 26):
                 # Ctrl-D or Ctrl-Z
                 raise SystemExit
 
+class NonInteractiveFileReadingPresentationConsole(FileReadingPresentationConsole):
+    def wait_for_user_input(self):
+        pass
+
 if __name__ == '__main__':
     path = sys.argv[1]
-    console = PresentationConsole(path)
+    console = InteractiveFileReadingPresentationConsole(path)
+#    console = StandardPresentationConsole(path)
     console.interact()
