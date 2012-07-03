@@ -61,7 +61,7 @@ class PresentationConsole(InteractiveConsole):
             InteractiveFileReadingPresentationConsole: StandardPresentationConsole
         }
 
-        print()
+        print('')
         print('switching mode!')
         self.__class__ = transitions[self.__class__]
 
@@ -115,6 +115,7 @@ class InteractiveFileReadingPresentationConsole(FileReadingPresentationConsole):
                 raise KeyboardInterrupt
             elif ord(gotch) in (4, 26):
                 # Ctrl-D or Ctrl-Z
+                print('')
                 raise SystemExit
 
 class NonInteractiveFileReadingPresentationConsole(FileReadingPresentationConsole):
