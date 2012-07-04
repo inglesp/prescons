@@ -77,11 +77,11 @@ class PresentationConsole(InteractiveConsole):
         InteractiveConsole.runcode(self, code)
         output, errors = sys.stdout.getvalue(), sys.stderr.getvalue()
         sys.stdout, sys.stderr = sys.__stdout__, sys.__stderr__
-        if len(output) > 0:
+        if output or errors:
             self.wait_for_user_input()
+        if output:
             self.write(output)
-        if len(errors) > 0:
-            self.wait_for_user_input()
+        if errors:
             self.write(errors)
 
     def wait_for_user_input(self):
