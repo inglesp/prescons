@@ -20,7 +20,7 @@ except ImportError:
     # python3
     from io import StringIO
 
-import os, sys
+import os.path, sys
 
 try:
     # python2
@@ -124,5 +124,7 @@ class NonInteractiveFileReadingPresentationConsole(FileReadingPresentationConsol
 
 if __name__ == '__main__':
     path = sys.argv[1]
+    full_path = os.path.join(os.getcwd(), path)
+    sys.path.append(os.path.dirname(full_path))
     console = InteractiveFileReadingPresentationConsole(path)
     console.interact()
