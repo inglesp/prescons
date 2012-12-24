@@ -1,16 +1,3 @@
-# presentation console
-# - a python interpreter for "pseudo-interative" demos
-#
-# usage: $ python prescons.py <filename>
-#
-# <filename> should be a file that contains python code as would be entered
-# directly in a terminal - see example.py
-#
-# while running, press 'space' to move through the code, and 'Ctrl-C' to break
-# into a normal interactive console
-#
-# github.com/inglesp/prescons
-
 from code import InteractiveConsole
 
 try:

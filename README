@@ -1,13 +1,16 @@
-prescons.py
+Presentation Console: prescons.py
 
-This is a "pseudo-interactive" python interpreter.  I hacked this together
-when preparing a presentation that involved some live coding.  It reads code
-from an input file and runs it line by line.  You can move through the code by
-hitting 'space'.
+This is a "pseudo-interactive" python console for giving presentations that
+involve some live coding.  It reads code from an input file and runs it line by
+line.  You can move through the code by hitting the space bar.
 
 You can also switch to (and from) a normal interactive console by pressing
 Ctrl-C.  This allows you to inspect, and even make changes to, the console's
-namespace in the middle of a presentation.
+environment in the middle of a presentation.
+
+There is a video of it in action, for my Europython talk on the descriptor
+protocol, at youtube.com/watch?v=D3-NZXHO5QI.  The input file can be found at
+github.com/inglesp/Discovering-Descriptors/blob/master/descriptors.py.
 
 Suggestions, bug reports, patches welcome at github.com/inglesp/prescons.
 
@@ -15,8 +18,12 @@ Usage:
 
  $ python prescons.py <filename>
 
-See example.py for an example.
+Alternatively, install the library from PyPI (eg with $ pip install prescons)
+and then run:
 
-Tested on Posix and Windows, and with pythons 2.7 and 3.2
+ $ python -m prescons <filename>
 
-Thanks to Asim Ihsan (https://github.com/asimihsan/) for testing and ideas.
+Tested on Posix and Windows, and with pythons 2.7 and 3.2+
+
+Thanks to Asim Ihsan (github.com/asimihsan) and Tom Close (github.com/TomClose)
+for testing and ideas.
