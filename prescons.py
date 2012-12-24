@@ -52,13 +52,15 @@ except ImportError:
 
 class PresentationConsole(InteractiveConsole):
     def __init__(self, path):
+        full_path = os.path.join(os.getcwd(), path)
+        sys.path.append(os.path.dirname(full_path))
         self.file = open(path)
         InteractiveConsole.__init__(self)
 
     def switch_mode(self):
         transitions = {
-            StandardPresentationConsole: InteractiveFileReadingPresentationConsole,
-            InteractiveFileReadingPresentationConsole: StandardPresentationConsole
+            RealInteractiveConsole: PseudoInteractiveConsole,
+            PseudoInteractiveConsole: RealInteractiveConsole
         }
 
         print('')
@@ -71,6 +73,19 @@ class PresentationConsole(InteractiveConsole):
         except KeyboardInterrupt:
             self.switch_mode()
             return ''
+
+class PseudoInteractiveConsole(PresentationConsole):
+    def get_raw_input(self, prompt):
+        self.write(prompt)
+        sys.stderr.flush()
+        if prompt == sys.ps1:
+            self.wait_for_user_input()
+        line = self.file.readline()
+        if len(line) == 0:
+            self.file.close()
+            raise EOFError
+        self.write(line)
+        return line.rstrip()
 
     def runcode(self, code):
         sys.stdout, sys.stderr = StringIO(), StringIO()
@@ -85,27 +100,6 @@ class PresentationConsole(InteractiveConsole):
             self.write(errors)
 
     def wait_for_user_input(self):
-        pass
-
-class StandardPresentationConsole(PresentationConsole):
-    def get_raw_input(self, prompt):
-        return input(prompt)
-
-class FileReadingPresentationConsole(PresentationConsole):
-    def get_raw_input(self, prompt):
-        self.write(prompt)
-        sys.stderr.flush()
-        if prompt == sys.ps1:
-            self.wait_for_user_input()
-        line = self.file.readline()
-        if len(line) == 0:
-            self.file.close()
-            raise EOFError
-        self.write(line)
-        return line.rstrip()
-
-class InteractiveFileReadingPresentationConsole(FileReadingPresentationConsole):
-    def wait_for_user_input(self):
         while True:
             gotch = getch()
             if gotch == ' ':
@@ -118,13 +112,12 @@ class InteractiveFileReadingPresentationConsole(FileReadingPresentationConsole):
                 print('')
                 raise SystemExit
 
-class NonInteractiveFileReadingPresentationConsole(FileReadingPresentationConsole):
-    def wait_for_user_input(self):
-        pass
+class RealInteractiveConsole(PresentationConsole):
+    def get_raw_input(self, prompt):
+        return input(prompt)
 
 if __name__ == '__main__':
     path = sys.argv[1]
-    full_path = os.path.join(os.getcwd(), path)
-    sys.path.append(os.path.dirname(full_path))
-    console = InteractiveFileReadingPresentationConsole(path)
+    console = PseudoInteractiveConsole(path)
     console.interact()
+
