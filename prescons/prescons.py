@@ -104,7 +104,10 @@ class RealInteractiveConsole(PresentationConsole):
         return input(prompt)
 
 if __name__ == '__main__':
-    path = sys.argv[1]
-    console = PseudoInteractiveConsole(path)
-    console.interact()
+    if len(sys.argv) != 2:
+        print('Usage: python {} <filename>'.format(sys.argv[0]))
+    else:
+        path = sys.argv[1]
+        console = PseudoInteractiveConsole(path)
+        console.interact()
 
