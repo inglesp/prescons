@@ -37,6 +37,11 @@ except ImportError:
     def getch():
         return msvcrt.getch()
 
+try:
+    import readline
+except ImportError:
+    pass
+
 # lines in input file with this prefix will be executed but not displayed
 hide_line_prefix = '#! '
 
@@ -69,12 +74,17 @@ class PseudoInteractiveConsole(PresentationConsole):
     def get_raw_input(self, prompt):
         line = self.get_next_line(prompt)
         if line.startswith(hide_line_prefix):
-            line = line.replace(hide_line_prefix, '', 1)
+            line = line.replace(hide_line_prefix, '', 1).rstrip()
             self.skip_wait = True
         else:
             self.write(line)
+            line = line.rstrip()
             self.skip_wait = False
-        return line.rstrip()
+        try:
+            readline.add_history(line)
+        except NameError:
+            pass
+        return line
 
     def get_next_line(self, prompt):
         self.write(prompt)
