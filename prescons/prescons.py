@@ -118,7 +118,7 @@ class RealInteractiveConsole(PresentationConsole):
     def get_raw_input(self, prompt):
         return input(prompt)
 
-if __name__ == '__main__':
+def main():
     if len(sys.argv) != 2:
         print('Usage: python {} <filename>'.format(sys.argv[0]))
     else:
@@ -126,3 +126,5 @@ if __name__ == '__main__':
         console = PseudoInteractiveConsole(path)
         console.interact()
 
+if __name__ == '__main__':
+    main()
