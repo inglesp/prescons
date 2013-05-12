@@ -37,11 +37,15 @@ except ImportError:
     def getch():
         return msvcrt.getch()
 
+# lines in input file with this prefix will be executed but not displayed
+hide_line_prefix = '#! '
+
 class PresentationConsole(InteractiveConsole):
     def __init__(self, path):
         full_path = os.path.join(os.getcwd(), path)
         sys.path.append(os.path.dirname(full_path))
         self.file = open(path)
+        self.skip_wait = False
         InteractiveConsole.__init__(self)
 
     def switch_mode(self):
@@ -63,6 +67,16 @@ class PresentationConsole(InteractiveConsole):
 
 class PseudoInteractiveConsole(PresentationConsole):
     def get_raw_input(self, prompt):
+        line = self.get_next_line(prompt)
+        if line.startswith(hide_line_prefix):
+            line = line.replace(hide_line_prefix, '', 1)
+            self.skip_wait = True
+        else:
+            self.write(line)
+            self.skip_wait = False
+        return line.rstrip()
+
+    def get_next_line(self, prompt):
         self.write(prompt)
         sys.stderr.flush()
         if prompt == sys.ps1:
@@ -71,8 +85,7 @@ class PseudoInteractiveConsole(PresentationConsole):
         if len(line) == 0:
             self.file.close()
             raise EOFError
-        self.write(line)
-        return line.rstrip()
+        return line
 
     def runcode(self, code):
         sys.stdout, sys.stderr = StringIO(), StringIO()
@@ -87,6 +100,8 @@ class PseudoInteractiveConsole(PresentationConsole):
             self.write(errors)
 
     def wait_for_user_input(self):
+        if self.skip_wait:
+            return
         while True:
             gotch = getch()
             if gotch == ' ':
