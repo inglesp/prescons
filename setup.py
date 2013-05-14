@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='prescons',
-    version='0.1',
+    version='0.2',
     description='Presentation Console',
     long_description=open('README').read(),
     packages=['prescons'],
